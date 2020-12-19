@@ -1,9 +1,6 @@
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 const Discord = require('discord.js')
 const fs = require('fs');
-const {token , favColor, araphyColor} = require('./botconfig.json');
-const prefix = "a!";
-console.log(`\n\n\n`)
+const {token , favColor, araphyColor, prefix} = require('./botconfig.json');
 
 const araphy = new Discord.Client();
 araphy.commands = new Discord.Collection();
