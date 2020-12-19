@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const fs = require('fs');
-const {token , favColor, araphyColor, prefix} = require('./botconfig.json');
+const {favColor, araphyColor, prefix} = require('./botconfig.json');
 
 const araphy = new Discord.Client();
 araphy.commands = new Discord.Collection();
@@ -144,4 +144,4 @@ araphy.on('message', async (message) => {
 
 
 //token goes here
-araphy.login(token);
+araphy.login(process.env.token);
