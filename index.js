@@ -42,7 +42,7 @@ araphy.on(`guildMemberAdd`, member => {
 
 araphy.on('message', async (message) => {
 
-    //if (message.author.id != '152976541373038592') return;
+    // if (message.author.id != '152976541373038592') return;
     if (message.author.bot) return;
     console.log(`[${message.channel.name}]` + message.author.username + `: ` + message.content);
 
@@ -52,24 +52,8 @@ araphy.on('message', async (message) => {
     // importing commands
     const command = araphy.commands.get(cmdName)
         || araphy.commands.find(cmd => cmd.aliases && cmd.aliases.includes(cmdName));
-    if (!command) return;
-    if (command.args && !args.length) {
-        let reply = `You didn't provide any arguements, ${message.author}!`;
-		if (command.usage) {
-			reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-		}
-
-		return message.channel.send(reply);
-    };
-
-    try {
-        command.execute(message, args);
-    } catch (err) {
-        console.log(err);
-        message.channel.send(`There was an error while trying to run the command`);
-    }
-
-    // framework to work only inside Araphy server
+    if (!command) {
+         // framework to work only inside Araphy server
     if (message.guild.id == `756776611172581477`) {
         //making a push annoucement channel
 
@@ -134,11 +118,29 @@ araphy.on('message', async (message) => {
         // end of push annoucement feature
 
     };
+    }
 
+    try {
+        if (command.args && !args.length) {
+            let reply = `You didn't provide any arguements, ${message.author}!`;
+            if (command.usage) {
+                reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+            }
+    
+            return message.channel.send(reply);
+        }
+    }catch(err) {
+        return;
+    }
 
-    /* other server mainframe goes here
-    dont put lengthy commands here
-    */
+    try {
+        command.execute(message, args);
+    } catch (err) {
+        console.log(err);
+        message.channel.send(`There was an error while trying to run the command`);
+    }
+
+  
     
 });
 
