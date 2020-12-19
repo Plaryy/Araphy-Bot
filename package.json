@@ -12,11 +12,11 @@
   },
   "author": "Plary",
   "license": "ISC",
-  "dependencies": {
-      "discord-js": "^12.5.1"
-  },
   "bugs": {
     "url": "https://github.com/Plaryy/Araphy-Bot/issues"
   },
-  "homepage": "https://github.com/Plaryy/Araphy-Bot#readme"
+  "homepage": "https://github.com/Plaryy/Araphy-Bot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.1"
+  }
 }
