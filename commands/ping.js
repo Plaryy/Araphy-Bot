@@ -16,8 +16,9 @@ module.exports = {
 
         let uptimeln = `Current Uptime:`;
         if (days) uptimeln += `${days} Days`;
-        if (hours) uptimeln += `${hours} Hours`;
-        if (minutes) uptimeln += `${minutes} Minutes`;
+        if (hours) uptimeln += ` ${hours} Hours`;
+        if (minutes) uptimeln += ` ${minutes} Minutes`;
+        uptimeln += ` ${seconds} Seconds`;
 
         uptimeEmbed = new Discord.MessageEmbed()
         .setColor(araphyColor)
