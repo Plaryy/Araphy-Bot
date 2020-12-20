@@ -14,7 +14,7 @@ module.exports = {
         let minutes = Math.floor(totSec / 60);
         let seconds = Math.floor(totSec % 60);
 
-        let uptimeln = `Current Uptime:`;
+        let uptimeln = ``;
         if (days) uptimeln += `${days} Days`;
         if (hours) uptimeln += ` ${hours} Hours`;
         if (minutes) uptimeln += ` ${minutes} Minutes`;
