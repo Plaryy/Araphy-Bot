@@ -24,7 +24,7 @@ module.exports = {
         .setColor(araphyColor)
         .setTitle(`Bot uptime!`)
         .addField(`API Ping/Latency`, `${message.client.ws.ping}ms`)
-        .addField(`Host/Machine Latency`, `${Date.now() - message.client.ws.ping}ms`)
+        .addField(`Host/Machine Latency`, `${Math.round(Date.now() - message.createdTimestamp)}ms`)
         .addField(`Uptime`, uptimeln)
         .setTimestamp()
 
