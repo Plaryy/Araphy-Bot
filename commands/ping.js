@@ -22,9 +22,10 @@ module.exports = {
 
         uptimeEmbed = new Discord.MessageEmbed()
         .setColor(araphyColor)
-        .setTitle(`Bot uptime!`)
+        .setTitle(`Current Bot Uptime`)
         .addField(`API Ping/Latency`, `${message.client.ws.ping}ms`)
         .addField(`Host/Machine Latency`, `${Math.round(Date.now() - message.createdTimestamp)}ms`)
+        .addField(`Deployed at`, message.client.readyTimestamp)
         .addField(`Uptime`, uptimeln)
         .setTimestamp()
 
