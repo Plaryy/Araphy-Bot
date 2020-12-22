@@ -23,7 +23,15 @@ module.exports = {
         }
 
         // informing the user the file has been reloaded
-        console.log(message.client.ws.ping)
-        message.channel.send(`Command "${cmdName}" has successfully been reloaded in ${message.client.ws.ping}ms.`);
+
+        // console.log(message.client.ws.ping)
+        // message.channel.send(`Command "${cmdName}" has successfully been reloaded in ${message.client.ws.ping}ms.`);
+
+        let mesOne = `Command ${cmdName} has successfully been reloaded in `;
+        message.channel.send(mesOne).then(e => {
+            let timeTaken = msg.createdTimestamp - message.createdTimestamp;
+            let mesTwo = `${timeTaken} miliseconds!`;
+            e.edit(mesOne + mesTwo);
+        });
 	},
 };

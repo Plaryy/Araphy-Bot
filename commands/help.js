@@ -22,7 +22,7 @@ module.exports = {
 
             .then(() => {
                 if (message.channel.type === `dm`) return;
-                message.channel.send(`Help has been sent to your DMs!.`);
+                message.channel.send(`Help has been sent to your DMs!`);
             })
             .catch(err => {
                 console.error(`Could not send message to a DMs.`, err);
@@ -46,6 +46,7 @@ module.exports = {
             .setColor(araphyColor)
             .setTitle(`Help for ${command.name} command`)
             .addField(`Details`, data)
+            .setTimestamp()
 
         return message.channel.send(helpDetails)
         

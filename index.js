@@ -94,9 +94,7 @@ araphy.on('message', async (message) => {
                                 message.delete();
                                 araphy.channels.cache.get(chaSend).send(annouceText, {
                                     files: [url]
-                                }).then(e => {
-                                    afterPost(e);
-                                });
+                                }).then(e => { afterPost(e) });
                             // if message doesn't have an attachment
                             } else {
                                 message.delete();

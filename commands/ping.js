@@ -14,22 +14,32 @@ module.exports = {
         let minutes = Math.floor(totSec / 60);
         let seconds = Math.floor(totSec % 60);
 
-        let uptimeln = ``;
+        let uptimeln;
         if (days) uptimeln += `${days} Days`;
         if (hours) uptimeln += ` ${hours} Hours`;
-        if (minutes) uptimeln += ` ${minutes} Minutes`;
+        if (minutes) uptimeln += ` ${minutes} Minutes`
         uptimeln += ` ${seconds} Seconds`;
 
-        uptimeEmbed = new Discord.MessageEmbed()
-        .setColor(araphyColor)
-        .setTitle(`Current Bot Uptime`)
-        .addField(`API Ping/Latency`, `${message.client.ws.ping}ms`)
-        .addField(`Host/Machine Latency`, `${Math.round(Date.now() - message.createdTimestamp)}ms`)
-        .addField(`Deployed at`, message.client.readyAt)
-        .addField(`Uptime`, uptimeln)
-        .setTimestamp()
+        function uptimeStats(status) {
+            uptimeEmbed = new Discord.MessageEmbed()
+            .setColor(araphyColor)
+            .setTitle(`Current Bot Uptime`)
+            .addField(`API Ping/Latency`, `${message.client.ws.ping}ms`)
+            .addField(`Host/Machine Latency`, status)
+            .addField(`Deployed at`, message.client.readyAt)
+            .addField(`Uptime`, uptimeln)
+            .setTimestamp()
 
-        return message.channel.send(uptimeEmbed);
+            return uptimeEmbed;
+        }
+
+        let fetchStats = uptimeStats('Fetching...');
+
+        message.channel.send(fetchStats).then(msg => {
+            let afterPing = msg.createdTimestamp - message.createdTimestamp;
+            fetchStats = uptimeStats(`PONG: ${afterPing}ms`);
+            msg.edit(fetchStats);
+        })
 
         
     },
