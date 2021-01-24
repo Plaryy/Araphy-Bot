@@ -106,4 +106,4 @@ araphy.on('message', async (message) => {
 });
 
 //token goes here
-araphy.login("Nzc5NzU0OTQ0Mjk4MjIxNjAw.X7lJYQ.-wM79_klqKeybvMfXNnnjUGVcbE");
+araphy.login(token);
