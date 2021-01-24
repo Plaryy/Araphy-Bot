@@ -37,9 +37,11 @@ module.exports = {
 
         message.channel.send(fetchStats).then(msg => {
             let afterPing = msg.createdTimestamp - message.createdTimestamp;
-            fetchStats = uptimeStats(`PONG: ${afterPing}ms`);
-            msg.edit(fetchStats);
-        })
+            if (afterPing) {
+                newStats = uptimeStats(`PONG: ${afterPing}ms`);
+                msg.edit(newStats);
+            } else return;
+        });
 
         
     },

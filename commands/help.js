@@ -7,15 +7,18 @@ module.exports = {
     usage: `[command name]`,
     execute(message, args) {
         const data = [];
-        const { commands } = message.client;
+        const extension = [];
+        const { commands, extensions } = message.client;
 
         if (!args.length) {
             data.push(commands.map(command => command.name).join(`, `));
+            extension.push(extensions.map(extension => extension.extName).join(`, `));
             let cmdName = commands.map(cmd => cmd.name);
             helpEmbed = new Discord.MessageEmbed()
                 .setTitle(`List of all available commands!`)
                 .setColor(araphyColor)
                 .setDescription("`" + data + "`")
+                .addField(`Extensions`, "`" + extension + "`")
                 .setFooter(`Total commands: ${cmdName.length}`)
 
             return message.author.send(helpEmbed)

@@ -1,11 +1,13 @@
 const Discord = require('discord.js')
 const fs = require('fs');
-const {favColor, araphyColor, prefix} = require('./botconfig.json');
+const {token , favColor, araphyColor} = require('./botconfig.json');
+const prefix = "a!";
 
 const araphy = new Discord.Client();
 araphy.commands = new Discord.Collection();
+araphy.extensions = new Discord.Collection();
 
-// fetching files
+// fetching cmd files
 const cmdFiles = fs.readdirSync(`./commands`).filter(file => file.endsWith(`.js`));
 let cmdLoaded = 0;
 let cmdFailed = 0;
@@ -20,12 +22,41 @@ for (const file of cmdFiles) {
         cmdFailed += 1;
     }
 };
-console.log(`COMMANDS LOADED.`)
+console.log(`STATUS: COMMANDS LOADED.`)
+// https://hastebin.com/owefonosah.typescript
+console.log(`------------------------------------------`)
+
+// fetching extensions
+const extFile = fs.readdirSync(`./araphyExtension`).filter(file => file.endsWith(`.js`));
+let extLoaded = 0;
+let extFailed = 0;
+for (const ext of extFile) {
+    try {
+        const extension = require(`./araphyExtension/${ext}`);
+        araphy.extensions.set(extension.extName, extension);
+        extLoaded += 1;
+        console.log(`[${extLoaded}] EXTENSION ${ext} loaded.`)
+    } catch(err) {
+        console.log(`ERROR on EXTENSION ${ext}. Error message:`);
+        console.log(err);
+        extFailed += 1;
+    }
+}
+console.log(`STATUS: EXTENSIONS LOADED.`)
 
 
 // bot alive
 araphy.on('ready', async => {
-    console.log(`\nAraphy bot is now awake! (${cmdLoaded} out of ${cmdLoaded + cmdFailed} commands loaded)`);
+    let cmdSum = cmdLoaded + cmdFailed;
+    let extSum = extLoaded + extFailed;
+    let fileSum = cmdLoaded + extLoaded;
+    let fileTotal = cmdSum + extSum;
+    console.log(`------------------------------------------`)
+    console.log(`${cmdLoaded}/${cmdSum} commands LOADED.`);
+    console.log(`${extLoaded}/${extSum} extensions LOADED.`);
+    console.log(`------------------------------------------`);
+    console.log(`Total files loaded: ${fileSum} out of ${fileTotal}`);
+    console.log(`STATUS: BOT is now ONLINE`);
     araphy.user.setPresence( {
         activity: {
             name: 'Drinking tea while monitoring the server!'
@@ -34,15 +65,10 @@ araphy.on('ready', async => {
     })
 });
 
-araphy.on(`guildMemberAdd`, member => {
-    const genChat = member.guild.channels.cache.find(ch => ch.name === `╔-general-discussion`);
-    if (!genChat) return console.log(`error`);
-    genChat.send(`**Welcome to the server, ${member}! We hope you enjoy your stay!**`)
-});
 
 araphy.on('message', async (message) => {
 
-    // if (message.author.id != '152976541373038592') return;
+    //if (message.author.id != '152976541373038592') return;
     if (message.author.bot) return;
     console.log(`[${message.channel.name}]` + message.author.username + `: ` + message.content);
 
@@ -51,73 +77,11 @@ araphy.on('message', async (message) => {
 
     // importing commands
     const command = araphy.commands.get(cmdName)
-        || araphy.commands.find(cmd => cmd.aliases && cmd.aliases.includes(cmdName));
+    || araphy.commands.find(cmd => cmd.aliases && cmd.aliases.includes(cmdName));
     if (!command) {
-         // framework to work only inside Araphy server
-    if (message.guild.id == `756776611172581477`) {
-        //making a push annoucement channel
-
-        const chaReceive = `785071650068496394`;
-        const chaSend = `760383163058487356`;
-
-        if (message) {
-            if (message.channel.id == chaReceive) {
-                //creating an annoucement embed function
-                function afterPost(prop) {
-                    annouceEmbed = new Discord.MessageEmbed()
-                        .setColor(araphyColor)
-                        .setTitle(`Annoucement has been sent ✅`)
-                        .setDescription(`[Message Link Here.](${prop.url})`)
-                        .addField(`Message Author`, `<@${message.author.id}>`)
-                        .addField(`Annoucement ID: ${prop.id}`, `Edit feature coming soon!`)
-                        .setFooter(`Annoucement has been made on ${prop.createdAt}`)
-
-                        return message.channel.send(annouceEmbed);
-                }
-                // reacting to message
-                message.react(`✅`).then(() => message.react(`❎`));
-                // filtering reactions
-                const filter = (reaction, user) => {
-                    return [`✅`, `❎`].includes(reaction.emoji.name) && user.id == message.author.id;
-                }
-                message.awaitReactions(filter, { max: 1, time: 10000, errors: [`time`] })
-                    .then(collected => {
-
-                        const reaction = collected.first();
-
-                        // if user press tick
-                        if (reaction.emoji.name == `✅`) {
-                            let annouceText = message.content;
-                            // if message has an attachment
-                            if (message.attachments.first()) {
-                                let url = message.attachments.first().proxyURL;
-                                message.delete();
-                                araphy.channels.cache.get(chaSend).send(annouceText, {
-                                    files: [url]
-                                }).then(e => { afterPost(e) });
-                            // if message doesn't have an attachment
-                            } else {
-                                message.delete();
-                                araphy.channels.cache.get(chaSend).send(annouceText).then(e => {
-                                    afterPost(e); // afterpost
-                                });
-                            }
-                        // if user cancel
-                        } else {
-                            message.reply(`Text has been cancelled ❎.`).then(e => { e.delete({timeout: 5000})});
-                        };
-                    })
-                    .catch(collected => {
-                        message.channel.send(`Timeout error: You took too long to react.`).then(e => { e.delete({timeout: 5000})});
-                        console.log(collected);
-                    })
-            }
-        } 
-        // end of push annoucement feature
-
-    };
+        const extension = araphy.extensions.find(exteName => exteName.extName);
+        extension.execute(message, args);
     }
-
     try {
         if (command.args && !args.length) {
             let reply = `You didn't provide any arguements, ${message.author}!`;
@@ -127,10 +91,9 @@ araphy.on('message', async (message) => {
     
             return message.channel.send(reply);
         }
-    }catch(err) {
+    } catch(err) {
         return;
     }
-
     try {
         command.execute(message, args);
     } catch (err) {
@@ -138,10 +101,9 @@ araphy.on('message', async (message) => {
         message.channel.send(`There was an error while trying to run the command`);
     }
 
-  
+
     
 });
 
-
 //token goes here
-araphy.login(process.env.token);
+araphy.login("Nzc5NzU0OTQ0Mjk4MjIxNjAw.X7lJYQ.-wM79_klqKeybvMfXNnnjUGVcbE");

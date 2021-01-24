@@ -1,6 +1,7 @@
 module.exports = {
 	name: 'reload',
     description: 'Reloads a command',
+    aliases: [`load`],
     usage: '<command name>',
     args: true,
 	execute(message, args) {
