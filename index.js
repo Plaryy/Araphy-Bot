@@ -1,6 +1,5 @@
 const Discord = require('discord.js')
 const fs = require('fs');
-const {token , favColor, araphyColor} = require('./botconfig.json');
 const prefix = "a!";
 
 const araphy = new Discord.Client();
@@ -76,12 +75,17 @@ araphy.on('message', async (message) => {
     const cmdName = args.shift().toLowerCase();
 
     // importing commands
+    
     const command = araphy.commands.get(cmdName)
     || araphy.commands.find(cmd => cmd.aliases && cmd.aliases.includes(cmdName));
     if (!command) {
-        const extension = araphy.extensions.find(exteName => exteName.extName);
-        extension.execute(message, args);
+        const extArray = [];
+        extArray.push(araphy.extensions.map(e => e));
+        extArray[0].forEach(e => {
+            e.execute(message, args);
+        })
     }
+        
     try {
         if (command.args && !args.length) {
             let reply = `You didn't provide any arguements, ${message.author}!`;
