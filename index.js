@@ -1,12 +1,34 @@
 const Discord = require('discord.js')
 const fs = require('fs');
-const prefix = "a!";
+
 
 const araphy = new Discord.Client();
 araphy.commands = new Discord.Collection();
 araphy.extensions = new Discord.Collection();
 
-// fetching cmd files
+
+const evLoad = fs.readdirSync(`./events`).filter(file => file.endsWith(`.js`));
+let evLoaded = 0;
+let evFailed = 0;
+for (const ev of evLoad) {
+    try {
+        const event = require(`./events/${ev}`);
+        evLoaded += 1;
+        console.log(`Event ${ev} loaded.`);
+        let evName = ev.split(`.`)[0];
+        araphy.on(evName, event.bind(null, araphy));
+        delete require.cache[require.resolve(`./events/${ev}`)]
+    } catch(err) {
+        console.log(`Failed to load event ${ev}. Error message: ${err.message}`)
+        evFailed += 0;
+    }
+}
+console.log(`------------------------------------------`)
+let evSum = evLoaded + evFailed;
+console.log(`STATUS: EVENTS LOADED`);
+console.log(`${evLoaded}/${evSum} total events loaded.`);
+console.log(`------------------------------------------`)
+
 const cmdFiles = fs.readdirSync(`./commands`).filter(file => file.endsWith(`.js`));
 let cmdLoaded = 0;
 let cmdFailed = 0;
@@ -21,8 +43,10 @@ for (const file of cmdFiles) {
         cmdFailed += 1;
     }
 };
-console.log(`STATUS: COMMANDS LOADED.`)
-// https://hastebin.com/owefonosah.typescript
+console.log(`------------------------------------------`)
+let cmdSum = cmdLoaded + cmdFailed;
+console.log(`STATUS: COMMANDS LOADED`)
+console.log(`${cmdLoaded}/${cmdSum} total commands loaded.`);
 console.log(`------------------------------------------`)
 
 // fetching extensions
@@ -41,73 +65,11 @@ for (const ext of extFile) {
         extFailed += 1;
     }
 }
-console.log(`STATUS: EXTENSIONS LOADED.`)
-
-
-// bot alive
-araphy.on('ready', async => {
-    let cmdSum = cmdLoaded + cmdFailed;
-    let extSum = extLoaded + extFailed;
-    let fileSum = cmdLoaded + extLoaded;
-    let fileTotal = cmdSum + extSum;
-    console.log(`------------------------------------------`)
-    console.log(`${cmdLoaded}/${cmdSum} commands LOADED.`);
-    console.log(`${extLoaded}/${extSum} extensions LOADED.`);
-    console.log(`------------------------------------------`);
-    console.log(`Total files loaded: ${fileSum} out of ${fileTotal}`);
-    console.log(`STATUS: BOT is now ONLINE`);
-    araphy.user.setPresence( {
-        activity: {
-            name: 'Drinking tea while monitoring the server!'
-        },
-        status: 'idle'
-    })
-});
-
-
-araphy.on('message', async (message) => {
-
-    //if (message.author.id != '152976541373038592') return;
-    if (message.author.bot) return;
-    console.log(`[${message.channel.name}]` + message.author.username + `: ` + message.content);
-
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
-    const cmdName = args.shift().toLowerCase();
-
-    // importing commands
-    
-    const command = araphy.commands.get(cmdName)
-    || araphy.commands.find(cmd => cmd.aliases && cmd.aliases.includes(cmdName));
-    if (!command) {
-        const extArray = [];
-        extArray.push(araphy.extensions.map(e => e));
-        extArray[0].forEach(e => {
-            e.execute(message, args);
-        })
-    }
-        
-    try {
-        if (command.args && !args.length) {
-            let reply = `You didn't provide any arguements, ${message.author}!`;
-            if (command.usage) {
-                reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-            }
-    
-            return message.channel.send(reply);
-        }
-    } catch(err) {
-        return;
-    }
-    try {
-        command.execute(message, args);
-    } catch (err) {
-        console.log(err);
-        message.channel.send(`There was an error while trying to run the command`);
-    }
-
-
-    
-});
+console.log(`------------------------------------------`)
+let extSum = extLoaded + extFailed;
+console.log(`STATUS: EXTENSIONS LOADED`);
+console.log(`${extLoaded}/${extSum} total extensions loaded.`)
+console.log(`------------------------------------------`)
 
 //token goes here
 araphy.login(token);
